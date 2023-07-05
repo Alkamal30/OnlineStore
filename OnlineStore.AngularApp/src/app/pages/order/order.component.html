@@ -1,0 +1,91 @@
+<nz-card
+    [nzTitle]="titleTemplate"
+    [nzExtra]="extraTemplate">
+
+    <nz-list>
+        <nz-empty *ngIf="model.orderItems.length == 0"></nz-empty>
+
+        <nz-list-item
+            *ngFor="let product of model.orderItems">
+
+            <p>{{ product.product.title }} - 
+                <span nz-typography
+                    nzType="secondary">
+                    ${{ product.product.price | number:'1.2-2' }}
+                </span>
+            </p>
+            <p>{{ product.count }}</p>
+        </nz-list-item>
+    </nz-list>
+</nz-card>
+
+<ng-template #titleTemplate>
+    <span>
+        Order №{{ model.id | number:'3.0-0' }}
+    </span>
+</ng-template>
+
+<ng-template #extraTemplate>
+    <!-- <ng-template
+        [ngIf]="authService.isAdmin"
+        [ngIfThen]="adminExtraTemplate"
+        [ngIfElse]="userExtraTemplate">
+
+    </ng-template> -->
+</ng-template>
+
+
+<!-- 
+<ng-template #userExtraTemplate>
+
+    <span nz-typography 
+        nzType="secondary"
+        style="margin-right: 10px; font-size: 16px;">
+        ${{ countTotalCost() | number:'1.2-2' }}
+    </span>
+
+    <button nz-button 
+        nzType="primary" 
+        nzGhost="true" 
+        nzDanger="true"
+        nz-popconfirm
+        nzPopconfirmTitle="Are you sure?"
+        nzPopconfirmPlacement="bottom"
+        nzOkText="OK"
+        nzCancelText="Cancel"
+        (nzOnConfirm)="reject()">
+        
+        <span nz-icon nzType="close" nzTheme="outline"></span>
+    </button>
+</ng-template>
+
+<ng-template #adminExtraTemplate>
+    <span nz-typography 
+        nzType="secondary"
+        style="margin-right: 10px; font-size: 16px;">
+        <span nz-icon nzType="user" nzTheme="outline"></span>
+        {{ model.customer.login }} - ${{ countTotalCost() | number:'1.2-2' }}
+    </span>
+
+    <button nz-button 
+        nzType="primary" 
+        nzGhost="true"
+        (click)="accept()">
+        
+        <span nz-icon nzType="check" nzTheme="outline"></span>
+    </button>
+
+    <button nz-button 
+        nzType="primary" 
+        nzGhost="true" 
+        nzDanger="true"
+        nz-popconfirm
+        nzPopconfirmTitle="Are you sure?"
+        nzPopconfirmPlacement="bottom"
+        nzOkText="OK"
+        nzCancelText="Cancel"
+        (nzOnConfirm)="reject()">
+        
+        <span nz-icon nzType="close" nzTheme="outline"></span>
+    </button>
+</ng-template> -->

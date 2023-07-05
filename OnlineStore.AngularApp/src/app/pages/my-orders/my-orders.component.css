@@ -1,0 +1,14 @@
+:host {
+    width: 100%;
+    height: 100%;
+}
+
+.to-right {
+    float: right;
+}
+
+.inner-table-container {
+    margin: -15px;
+    padding: 6px 8px 6px 58px;
+    background-color: rgb(253,253,253);
+}

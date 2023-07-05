@@ -1,0 +1,102 @@
+
+<ng-template
+    [ngIf]="authService.userLogin"
+    [ngIfElse]="login">
+
+    {{ this.authService.unauthorizedRedirect() }}
+</ng-template>
+
+
+
+
+<ng-template #login>
+    
+    <div *ngIf="breakpointObserver.isMatched(['(min-width: 900px)'])"
+        class="desktop-container">
+        <nz-divider nzPlain="false" [nzText]="text">
+            <ng-template #text>
+                <h1 style="font-size: 36px;">Log In</h1>
+            </ng-template>
+        </nz-divider>
+        
+        <div nz-row style="justify-content: center;">
+            <form nz-form class="login-form" [formGroup]="validateForm" (ngSubmit)="submitForm()">
+                <nz-form-item>
+                    <nz-form-control nzErrorTip="Please input your username!">
+                        <nz-input-group nzPrefixIcon="user" nzSize="large">
+                            <input type="text" 
+                                nz-input
+                                formControlName="login"
+                                placeholder="Username"
+                                autofocus/>
+                        </nz-input-group>
+                    </nz-form-control>
+                </nz-form-item>
+                <nz-form-item>
+                    <nz-form-control nzErrorTip="Please input your password!">
+                        <nz-input-group nzPrefixIcon="lock" nzSize="large">
+                            <input type="password"
+                                nz-input
+                                formControlName="password"
+                                placeholder="Password"/>
+                        </nz-input-group>
+                    </nz-form-control>
+                </nz-form-item>
+        
+                <div class="login-form-margin"></div>
+        
+                <button class="login-form-button" 
+                    nz-button 
+                    nzType="primary"
+                    nzSize="large">
+                    Log In
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div *ngIf="breakpointObserver.isMatched(['(max-width: 899px)'])"
+        class="mobile-container">
+        <nz-divider nzPlain="false" [nzText]="text">
+            <ng-template #text>
+                <h1 style="font-size: 36px;">Log In</h1>
+            </ng-template>
+        </nz-divider>
+        
+        <div nz-row style="justify-content: center;">
+            <form nz-form class="login-form" [formGroup]="validateForm" (ngSubmit)="submitForm()">
+                <nz-form-item>
+                    <nz-form-control nzErrorTip="Please input your username!">
+                        <nz-input-group nzPrefixIcon="user" nzSize="large">
+                            <input type="text" 
+                                nz-input
+                                formControlName="login"
+                                placeholder="Username"
+                                autofocus/>
+                        </nz-input-group>
+                    </nz-form-control>
+                </nz-form-item>
+                <nz-form-item>
+                    <nz-form-control nzErrorTip="Please input your password!">
+                        <nz-input-group nzPrefixIcon="lock" nzSize="large">
+                            <input type="password"
+                                nz-input
+                                formControlName="password"
+                                placeholder="Password"/>
+                        </nz-input-group>
+                    </nz-form-control>
+                </nz-form-item>
+        
+                <div class="login-form-margin"></div>
+        
+                <button class="login-form-button" 
+                    nz-button 
+                    nzType="primary"
+                    nzSize="large">
+                    Log In
+                </button>
+            </form>
+        </div>
+    </div>
+</ng-template>
+

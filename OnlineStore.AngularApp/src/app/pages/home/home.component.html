@@ -1,0 +1,26 @@
+<div *ngIf="breakpointObserver.isMatched(['(min-width: 900px)'])"
+    class="desktop-container">
+
+    <ng-container *ngTemplateOutlet="homePageTemplate">
+
+    </ng-container>
+</div>
+
+<div *ngIf="breakpointObserver.isMatched(['(max-width: 899px)'])"
+    class="mobile-container">
+
+    <ng-container *ngTemplateOutlet="homePageTemplate">
+
+    </ng-container>
+</div>
+
+
+
+<ng-template #homePageTemplate>
+    <h1>Welcome to Online Store</h1>
+    <p>
+        This web-app developed on 
+            <a href="https://dotnet.microsoft.com/en-us/apps/aspnet">ASP.NET</a> and 
+            <a href="https://angular.io/">Angular</a>
+    </p>
+</ng-template>

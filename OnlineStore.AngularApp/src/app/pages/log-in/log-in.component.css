@@ -1,0 +1,20 @@
+:host {
+    text-align: center;
+}
+
+
+.desktop-container .login-form {
+    max-width: 300px;
+    width: 300px;
+}
+
+.login-form-button {
+    width: 100%;
+    margin: 10px 0 0 0;
+}
+
+
+.mobile-container .login-form {
+    max-width: 240px;
+    width: 240px;
+}

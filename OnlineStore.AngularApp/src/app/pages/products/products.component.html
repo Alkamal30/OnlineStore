@@ -1,0 +1,208 @@
+
+<ng-template 
+    [ngIf]="!this.authService.userLogin"
+    [ngIfElse]="authorizedTemplate">
+
+    {{ this.authService.unauthorizedRedirect() }}
+</ng-template>
+
+
+<ng-template #authorizedTemplate>
+    <div nz-row *ngIf="breakpointObserver.isMatched(['(min-width: 900px)'])" class="desktop-container">
+
+        <div style="position: static; z-index: 100;">
+            <div *ngIf="authService.isAdmin" 
+                style="position: fixed; bottom: 90px; right: 90px; z-index: 100;">
+                <button nz-button nzType="primary" nzShape="circle" 
+                    (click)="addNewProduct()"
+                    style="width: 64px; height: 64px; font-size: 32px;">
+                    <span nz-icon nzType="plus-circle" nzTheme="outline"></span>
+                </button>
+            </div>
+        </div>
+
+        <div nz-col nzMd="1" nzLg="2" nzXl="3" nzXXl="4"></div>
+        <div nz-col nzMd="22" nzLg="20" nzXl="18" nzXXl="16">
+            <div nz-row class="search-bar-container">
+                <div nz-row class="search-bar" [style.width.px]="getSearchBarWidth()">
+                    <nz-input-group nzPrefixIcon="search" [nzSuffix]="searchSuffix">
+                        <input type="text" nz-input placeholder="Search" [(ngModel)]="filterValue"/>
+                    </nz-input-group>
+
+                    <ng-template #searchSuffix>
+                        <button nz-button
+                            nzType="default"
+                            nzShape="circle"
+                            nz-popover
+                            nzPopoverTitle="Filters"
+                            nzPopoverPlacement="bottom"
+                            [nzPopoverContent]="contentTemplate">
+                            <span nz-icon nzType="filter" nzTheme="outline"></span>
+                        </button>
+
+                        <ng-template #contentTemplate>
+                            <nz-checkbox-group [(ngModel)]="filterOptions">
+
+                            </nz-checkbox-group>
+                        </ng-template>
+                    </ng-template>
+                </div>
+            </div>
+            <div nz-row style="justify-content: center;">
+                <ng-template
+                    [ngIf]="authService.isAdmin"
+                    [ngIfThen]="editableCardTemplate"
+                    [ngIfElse]="previewCardTemplate">
+
+                </ng-template>
+
+                <ng-template #editableCardTemplate>
+                    <app-editable-product
+                        *ngFor="let product of products | filterProducts:filterValue:filterOptions"
+                        [product]="product"
+                        (startEditEvent)="startEditCard($event)"
+                        (removeEvent)="removeCard($event)">
+                
+                    </app-editable-product>
+                </ng-template>
+
+                <ng-template #previewCardTemplate>
+                    <app-product-card
+                        *ngFor="let product of products | filterProducts:filterValue:filterOptions"
+                        [product]="product"
+                        (addToCartEvent)="addToCart($event)"
+                        (redirectToCartEvent)="redirectToCart()">
+                
+                    </app-product-card>
+                </ng-template>
+            </div>
+        </div>
+        <div nz-col nzMd="1" nzLg="2" nzXl="3" nzXXl="4"></div>
+    </div>
+
+    <div nz-row *ngIf="breakpointObserver.isMatched(['(max-width: 899px)'])">
+
+        <div style="position: static; z-index: 100;">
+            <div *ngIf="authService.isAdmin" 
+                style="position: fixed; bottom: 60px; right: 40px; z-index: 100;">
+                <button nz-button nzType="primary" nzShape="circle" 
+                    (click)="addNewProduct()"
+                    style="width: 64px; height: 64px; font-size: 32px;">
+                    <span nz-icon nzType="plus-circle" nzTheme="outline"></span>
+                </button>
+            </div>
+        </div>
+
+        <div nz-col nzSpan="1"></div>
+        <div nz-col nzSpan="22">
+            <div nz-row class="search-bar-container">
+                <div nz-row class="search-bar" [style.width.px]="getSearchBarWidth()">
+                    <nz-input-group nzPrefixIcon="search">
+                        <input type="text" nz-input placeholder="Search" [(ngModel)]="filterValue"/>
+                    </nz-input-group>
+                </div>
+            </div>
+            <div nz-row style="justify-content: center;">
+                <ng-template
+                    [ngIf]="authService.isAdmin"
+                    [ngIfThen]="editableCardTemplate"
+                    [ngIfElse]="previewCardTemplate">
+
+                </ng-template>
+
+                <ng-template #editableCardTemplate>
+                    <app-editable-product
+                        *ngFor="let product of products | filterProducts:filterValue:filterOptions"
+                        [product]="product"
+                        (startEditEvent)="startEditCard($event)"
+                        (removeEvent)="removeCard($event)">
+                
+                    </app-editable-product>
+                </ng-template>
+
+                <ng-template #previewCardTemplate>
+                    <app-product-card
+                        *ngFor="let product of products | filterProducts:filterValue:filterOptions"
+                        [product]="product"
+                        (addToCartEvent)="addToCart($event)"
+                        (redirectToCartEvent)="redirectToCart()">
+                
+                    </app-product-card>
+                </ng-template>
+            </div>
+        </div>
+        <div nz-col nzSpan="1"></div>
+    </div>
+</ng-template>
+
+
+<nz-modal [(nzVisible)]="isModalVisible"
+        [nzTitle]="this.modalTitle"
+        (nzOnCancel)="handleModalCancel()"
+        (nzOnOk)="handleModalOk()">
+        
+    <ng-container *nzModalContent>
+        <div style="display: flex; justify-content: center;">
+            <div class="card-info-form">
+                <form nz-form nzLayout="vertical" [formGroup]="validateForm">
+    
+                    <nz-form-item>
+                        <nz-form-label nzFor="title">Title</nz-form-label>
+                        <nz-form-control nzErrorTip="Please input title!">
+                            <input type="text"
+                                [(ngModel)]="this.modalProduct.title"
+                                nz-input 
+                                placeholder="Title"
+                                formControlName="title"/>
+                        </nz-form-control>
+                    </nz-form-item>
+                    <nz-form-item>
+                        <nz-form-label nzFor="price">Price</nz-form-label>
+                        <nz-form-control nzErrorTip="Please input price!">
+                            <nz-input-number
+                                [(ngModel)]="this.modalProduct.price"
+                                formControlName="price"
+                                [nzMin]="0"
+                                [nzStep]="0.01"
+                                [nzPlaceHolder]="'Price'"
+                                style="width: 100%;">
+
+                            </nz-input-number>
+                        </nz-form-control>
+                    </nz-form-item>
+                    <nz-form-item>
+                        <nz-form-label nzFor="description">Description</nz-form-label>
+                        <nz-form-control nzErrorTip="Please input description!">
+                            <textarea
+                                rows="6"
+                                nz-input
+                                [(ngModel)]="modalProduct.description"
+                                formControlName="description"
+                                placeholder="Description">
+
+                            </textarea>
+                        </nz-form-control>
+                    </nz-form-item>
+                    <nz-form-item>
+                        <nz-form-label nzFor="image">Image</nz-form-label>
+                        <nz-form-control nzErrorTip="Please input image!">
+                            <input type="text"
+                                [(ngModel)]="modalProduct.image"
+                                nz-input 
+                                placeholder="Image"
+                                formControlName="image"/>
+                        </nz-form-control>
+                        <div *ngIf="modalProduct.image != ''"
+                            class="img-container">
+                            <img nz-image 
+                                nzDisablePreview=""
+                                [nzSrc]="modalProduct.image"
+                                [nzFallback]="getFallbackImage()">
+                        </div>
+                    </nz-form-item>
+                    
+                </form>
+            </div>
+        </div>
+    </ng-container>
+</nz-modal>

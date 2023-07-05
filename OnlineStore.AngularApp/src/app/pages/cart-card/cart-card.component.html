@@ -1,0 +1,140 @@
+
+<div class="ratio-inner ratio-3-1" style="margin: 6px;">
+    <nz-card class="ratio-content"
+        nzHoverable
+        [nzBodyStyle]="{width: '100%', height: '100%', padding: '6px'}">
+
+        <ng-template
+            [ngIf]="breakpointObserver.isMatched(['(min-width: 900px)'])"
+            [ngIfThen]="desktopTemplate"
+            [ngIfElse]="mobileTemplate">
+
+        </ng-template>
+    </nz-card>
+</div>
+
+
+<ng-template #desktopTemplate>
+    <div nz-row class="desktop-container" style="width: 100%; height: 100%;">
+        <div nz-col nzFlex="2" style="height: 100%; border-right: 1px solid #f0f0f0;">
+            <div class="cover-container">
+                <div *ngIf="orderItem.product.image == ''"
+                    style="display: flex; justify-content: center; align-items: center;">
+        
+                    <nz-empty></nz-empty>
+                </div>
+                
+                <img [src]="orderItem.product.image">
+            </div>
+        </div>
+        <div nz-col nzFlex="4" style="height: 100%; margin-left: 12px;">
+            <div class="title-container">
+                <span class="title-font">{{ orderItem.product.title }}</span>
+                <div style="height: 100%; display: flex; align-items: center;">
+                    <nz-input-number
+                        style="margin-right: 10px;"
+                        [nzMin]="1"
+                        [nzMax]="9999"
+                        [(ngModel)]="this.orderItem.count"
+                        (ngModelChange)="onCountChanged()">
+            
+                    </nz-input-number> 
+                    
+                    <button nz-button nzType="primary" nzGhost nzDanger (click)="remove()"> 
+                        <span nz-icon nzType="delete" nzTheme="outline"></span>
+                    </button>
+                </div>
+            </div>
+            <div class="description-container">
+                {{ orderItem.product.description}}
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #mobileTemplate>
+    <div nz-row class="mobile-container" style="width: 100%; height: 100%;">
+        <div nz-col nzFlex="2" style="height: 100%; border-right: 1px solid #f0f0f0;">
+            <div class="cover-container">
+                <div *ngIf="orderItem.product.image == ''"
+                    style="display: flex; justify-content: center; align-items: center;">
+        
+                    <nz-empty></nz-empty>
+                </div>
+                
+                <img [src]="orderItem.product.image">
+            </div>
+        </div>
+        <div nz-col nzFlex="4" style="height: 100%; margin-left: 12px;">
+            <div class="title-container">
+                <div style="height: 100%; width: 70%; overflow: hidden; display: flex; align-items: end;">
+                    <p class="title-font">{{ orderItem.product.title }}</p>
+                </div>
+                <div style="height: 100%; width: 30%; display: flex; align-items: center; justify-content: right;">
+                    <nz-input-number
+                        style="margin-right: 6px; max-width: 50px;"
+                        nzSize="small"
+                        [nzMin]="1"
+                        [nzMax]="9999"
+                        [(ngModel)]="this.orderItem.count"
+                        (ngModelChange)="onCountChanged()">
+            
+                    </nz-input-number> 
+                    
+                    <button nz-button nzType="primary" nzSize="small" nzGhost nzDanger (click)="remove()"> 
+                        <span nz-icon nzType="delete" nzTheme="outline"></span>
+                    </button>
+                </div>
+            </div>
+            <div class="description-container">
+                <div style="height: 100%; width: 100%; overflow-y: auto;">
+                    {{ orderItem.product.description}}
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+
+<!-- <nz-card
+    [nzTitle]="titleTemplate"
+    [nzExtra]="extraTemplate">
+
+    <nz-input-group>
+        <nz-input-number 
+            nzSize="large"
+            [nzMin]="1"
+            [nzMax]="9999"
+            [(ngModel)]="this.orderItem.count"
+            (ngModelChange)="onCountChanged()">
+
+        </nz-input-number>
+    </nz-input-group>
+</nz-card>
+
+<ng-template #titleTemplate>
+    <span class="card-title">
+        {{ this.orderItem.product.title }}
+    </span>
+</ng-template>
+
+<ng-template #extraTemplate>
+    <span nz-typography 
+        nzType="secondary"
+        style="margin-right: 10px; font-size: 18px;">
+        ${{ this.orderItem.product.price | number: '1.2-2' }}
+    </span>
+
+    <button nz-button 
+            nzType="primary" 
+            nzGhost="true" 
+            nzDanger="true"
+            nz-popconfirm
+            nzPopconfirmTitle="Are you sure?"
+            nzPopconfirmPlacement="bottom"
+            nzOkText="OK"
+            nzCancelText="Cancel"
+            (nzOnConfirm)="remove()">
+        <span nz-icon nzType="delete" nzTheme="outline"></span>
+    </button>
+</ng-template> -->

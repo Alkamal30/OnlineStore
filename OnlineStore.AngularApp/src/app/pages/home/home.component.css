@@ -1,0 +1,21 @@
+:host {
+    text-align: center;
+}
+
+
+.desktop-container h1 {
+    font-size: 64px;
+}
+
+.desktop-container p {
+    font-size: 22px;
+}
+
+
+.mobile-container h1 {
+    font-size: 48px;
+}
+
+.mobile-container p {
+    font-size: 18px;
+}

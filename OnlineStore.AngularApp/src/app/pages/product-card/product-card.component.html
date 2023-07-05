@@ -1,0 +1,66 @@
+
+<nz-card nzHoverable
+        [nzCover]="defaultCoverTemplate"
+        [nzActions]="[changeCurrencyAction, addToCartAction]">
+
+    <nz-card-meta 
+        [nzTitle]="cardMetaTitleTemplate"
+        [nzDescription]="cardMetaDescriptionTemplate">
+
+    </nz-card-meta>
+</nz-card>
+
+
+<ng-template #defaultCoverTemplate>
+    <div class="cover-container">
+        <div *ngIf="product.image == ''"
+            style="display: flex; justify-content: center; align-items: center;">
+
+            <nz-empty></nz-empty>
+        </div>
+        
+        <img [src]="product.image">
+    </div>
+</ng-template>
+
+
+<ng-template #changeCurrencyAction>
+    <p (click)="turnCurrency()">
+        {{ isDollarCurrency ? '$' : '₽' }}
+        {{ (isDollarCurrency ? product.price : product.price * 85.32) | number:'1.2-2' }}
+    </p>
+</ng-template>
+
+<ng-template #addToCartAction>
+    <ng-template
+        [ngIf]="!isAddedToCart"
+        [ngIfElse]="addedToCartAction">
+
+        <span nz-icon
+            nzType="shopping" 
+            nzTheme="outline" 
+            (click)="addToCart()">
+        </span>
+    </ng-template>
+
+    <ng-template #addedToCartAction>
+        <span nz-icon 
+            nzType="shopping" 
+            nzTheme="fill"
+            (click)="redirectToCart()">
+        </span>
+    </ng-template>
+</ng-template>
+
+
+<ng-template #cardMetaTitleTemplate>
+    <div class="title-block">
+        <div class="title-text">{{ product.title }}</div>
+    </div>
+</ng-template>
+
+<ng-template #cardMetaDescriptionTemplate>
+    <div class="description-block">
+        <div class="description-text">{{ product.description }}</div>
+    </div>
+</ng-template>

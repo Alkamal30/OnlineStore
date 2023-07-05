@@ -1,0 +1,84 @@
+
+<ng-template 
+    [ngIf]="!this.authService.userLogin"
+    [ngIfElse]="authorizedTemplate">
+
+    {{ this.authService.unauthorizedRedirect() }}
+</ng-template>
+
+<ng-template #authorizedTemplate>
+    <ng-template
+        [ngIf]="(orders$ | async)?.length == 0"
+        [ngIfElse]="contentTemplate">
+        
+        <div style="height: 100%; display: flex; justify-content: center; align-items: center;">
+            <nz-empty></nz-empty>
+        </div>
+    </ng-template>
+</ng-template>
+
+<ng-template #contentTemplate>
+    <div nz-row>
+        <div nz-col nzMd="1" nzLg="2" nzXl="3" nzXXl="4"></div>
+        <div nz-col nzMd="22" nzLg="20" nzXl="18" nzXXl="16" style="justify-content: center;">
+
+            <nz-table #ordersTable
+                nzBordered=""
+                nzFooter=" "
+                nzShowPagination="false"
+                *ngIf="orders$ | async as orders" 
+                [nzData]="orders">
+                <thead>
+                    <tr>
+                        <th nzWidth="60px"></th>
+                        <th><span class="to-right">Order ID</span></th>
+                        <th>Customer</th>
+                        <th>Formation Date</th>
+                        <th><span class="to-right">Units Count</span></th>
+                        <th><span class="to-right">Total Cost</span></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <ng-container *ngFor="let order of ordersTable.data">
+                        <tr>
+                            <td [nzExpand]="expandSet.has(order.id)" (nzExpandChange)="onExpandChange(order.id, $event)"></td>
+                            <td><span class="to-right">{{ order.id | number:'3.0-0' }}</span></td>
+                            <td>{{ order.customer.login }}</td>
+                            <td>{{ order.formationDate }}</td>
+                            <td><span class="to-right">{{ countUnits(order) }}</span></td>
+                            <td><span class="to-right">${{ calculateTotalCost(order) | number:'1.2-2' }}</span></td>
+                        </tr>
+
+                        <tr [nzExpand]="expandSet.has(order.id)">
+                            <div class="inner-table-container">
+                                <nz-table #innerTable
+                                    
+                                    nzBordered
+                                    nzShowPagination="false"
+                                    [nzData]="order.orderItems">
+                                    <thead>
+                                        <!-- <tr>
+                                            <th>Title</th>
+                                            <th>Price</th>
+                                            <th>Count</th>
+                                            <th>Total Cost</th>
+                                        </tr> -->
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let item of innerTable.data">
+                                            <td>{{ item.product.title }}</td>
+                                            <td>${{ item.product.price | number:'1.2-2' }} / unit</td>
+                                            <td>{{ item.count }}</td>
+                                            <td>${{ (item.count * item.product.price) | number:'1.2-2' }}</td>
+                                        </tr>
+                                    </tbody>
+                                </nz-table>
+                            </div>
+                        </tr>
+                    </ng-container>
+                </tbody>
+            </nz-table>
+        </div>
+        <div nz-col nzMd="1" nzLg="2" nzXl="3" nzXXl="4"></div>
+    </div>
+</ng-template>

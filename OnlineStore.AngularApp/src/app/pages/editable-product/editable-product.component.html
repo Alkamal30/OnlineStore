@@ -1,0 +1,66 @@
+
+<nz-card nzHoverable
+        [nzCover]="coverTemplate"
+        [nzActions]="[priceAction, editAction, removeAction]">
+
+    <nz-card-meta 
+        [nzTitle]="cardMetaTitleTemplate"
+        [nzDescription]="cardMetaDescriptionTemplate">
+
+    </nz-card-meta>
+</nz-card>
+
+
+<ng-template #coverTemplate>
+    <div class="cover-container">
+        <div *ngIf="product.image == ''"
+            style="display: flex; justify-content: center; align-items: center;">
+
+            <nz-empty></nz-empty>
+        </div>
+        
+        <img nz-image 
+            nzDisablePreview 
+            [nzSrc]="product.image"
+            [nzFallback]="getFallbackImage()" >
+    </div>
+
+    <ng-template #emptyImageTemplate>
+
+    </ng-template>
+</ng-template>
+
+
+<ng-template #priceAction>
+    <p>${{ product.price | number:'1.2-2' }}</p>
+</ng-template>
+
+<ng-template #editAction>
+    <span nz-icon 
+        nzType="edit" 
+        nzTheme="outline"
+        (click)="startEdit()">
+    </span>
+</ng-template>
+
+<ng-template #removeAction>
+    <span nz-icon 
+        nzType="delete" 
+        nzTheme="outline"
+        nz-popconfirm="Are you sure?"
+        (nzOnConfirm)="remove()">
+    </span>
+</ng-template>
+
+
+<ng-template #cardMetaTitleTemplate>
+    <div class="title-block">
+        <div class="title-text">{{ product.title }}</div>
+    </div>
+</ng-template>
+
+<ng-template #cardMetaDescriptionTemplate>
+    <div class="description-block">
+        <div class="description-text">{{ product.description }}</div>
+    </div>
+</ng-template>
