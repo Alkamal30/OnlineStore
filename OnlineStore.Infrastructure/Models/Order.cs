@@ -4,7 +4,7 @@ public class Order {
 	public int Id { get; set; }
 
 	public int CustomerId { get; set; }
-	public User Customer { get; set; } = null!;
+	public User? Customer { get; set; }
 
 	public DateTime FormationDate { get; set; }
 

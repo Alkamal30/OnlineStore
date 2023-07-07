@@ -1,4 +1,6 @@
-﻿namespace OnlineStore.WebAPI.Models;
+﻿using OnlineStore.Common.Enums;
+
+namespace OnlineStore.WebAPI.Models;
 
 public class UserPostModel {
 	public string Login { get; set; } = "";

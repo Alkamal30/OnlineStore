@@ -1,3 +1,5 @@
+using OnlineStore.Common.Enums;
+
 namespace OnlineStore.WebAPI.Models;
 
 public class UserAuthorizationResponseModel {
