@@ -1,10 +1,14 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using OnlineStore.Core.Abstractions.Services.Email;
+using OnlineStore.Core.Abstractions.Services.RabbitMq;
+using OnlineStore.Core.Abstractions.Services.StatisticsCollection;
 using OnlineStore.Core.Services;
 using OnlineStore.Core.Services.Authorization;
 using OnlineStore.Core.Services.Crud;
+using OnlineStore.Core.Services.Email;
 using OnlineStore.Core.Services.RabbitMq;
-using OnlineStore.Core.Services.RedisCache;
+using OnlineStore.Core.Services.Redis;
 using OnlineStore.Infrastructure;
 
 namespace OnlineStore.Core;

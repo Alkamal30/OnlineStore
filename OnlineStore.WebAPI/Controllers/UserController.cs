@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using OnlineStore.Core.Services.Crud;
+using OnlineStore.Core.Abstractions.Services.Crud;
 using OnlineStore.WebAPI.Filters;
 using OnlineStore.WebAPI.Models;
 
@@ -55,7 +55,7 @@ public class UserController : ControllerBase {
 	public async Task Add(UserPostModel user) {
 		try {
 			await _crudService.AddAsync(
-				_mapper.Map<Core.Models.User>(user)
+				_mapper.Map<Core.Abstractions.Models.User>(user)
 			);
 		}
 		catch {
@@ -68,7 +68,7 @@ public class UserController : ControllerBase {
 	public async Task Update(UserModel user) {
 		try {
 			await _crudService.UpdateAsync(
-				_mapper.Map<Core.Models.User>(user)
+				_mapper.Map<Core.Abstractions.Models.User>(user)
 			);
 		}
 		catch { }
@@ -79,7 +79,7 @@ public class UserController : ControllerBase {
 	public async Task Remove(UserModel user) {
 		try {
 			await _crudService.RemoveAsync(
-				_mapper.Map<Core.Models.User>(user)
+				_mapper.Map<Core.Abstractions.Models.User>(user)
 			);
 		}
 		catch { }
@@ -90,7 +90,7 @@ public class UserController : ControllerBase {
 	public async Task RemoveById(int id) {
 		try {
 			await _crudService.RemoveAsync(
-				_mapper.Map<Core.Models.User>(
+				_mapper.Map<Core.Abstractions.Models.User>(
 					new UserModel { Id = id }
 				)
 			);

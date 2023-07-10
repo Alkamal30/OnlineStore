@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using OnlineStore.Core.Models;
+using OnlineStore.Core.Abstractions.Models;
+using OnlineStore.Core.Abstractions.Services.Crud;
 using OnlineStore.Infrastructure;
 
 namespace OnlineStore.Core.Services.Crud;

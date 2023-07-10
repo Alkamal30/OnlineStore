@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using OnlineStore.Core.Abstractions.Services.RabbitMq;
 using RabbitMQ.Client;
 using System.Text;
 using System.Text.Json;

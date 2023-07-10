@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using OnlineStore.Core.Abstractions.Services.Authorization;
 using System.Text;
 
 namespace OnlineStore.Core.Services.Authorization;

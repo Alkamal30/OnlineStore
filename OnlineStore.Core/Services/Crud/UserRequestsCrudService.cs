@@ -1,7 +1,8 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using OnlineStore.Core.Models;
-using OnlineStore.Core.Services.RedisCache;
+using OnlineStore.Core.Abstractions.Models;
+using OnlineStore.Core.Abstractions.Services.Crud;
+using OnlineStore.Core.Abstractions.Services.Redis;
 using OnlineStore.Infrastructure;
 
 namespace OnlineStore.Core.Services.Crud;

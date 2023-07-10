@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using OnlineStore.Core.Abstractions.Services.Crud;
 
 namespace OnlineStore.Core.Services.Crud;
 

@@ -1,9 +1,8 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using OnlineStore.Core.Services.Crud;
-using OnlineStore.Core.Services.RabbitMq;
+using OnlineStore.Core.Abstractions.Services.Crud;
+using OnlineStore.Core.Abstractions.Services.RabbitMq;
 using OnlineStore.WebAPI.Models;
 
 namespace OnlineStore.WebAPI.Controllers;
@@ -79,8 +78,8 @@ public class OrderController : Controller {
 	[Authorize(Roles = "User,Admin")]
 	public async Task<IActionResult> Checkout(OrderCheckoutModel model) {
 		try {
-			var mappedOrder = _mapper.Map<Core.Models.Order>(model);
-			mappedOrder.Customer = new Core.Models.User {
+			var mappedOrder = _mapper.Map<Core.Abstractions.Models.Order>(model);
+			mappedOrder.Customer = new Core.Abstractions.Models.User {
 				Login = User.Identity.Name
 			};
 
@@ -101,7 +100,7 @@ public class OrderController : Controller {
 	public async Task<IActionResult> Add(OrderPostModel model) {
 		try {
 			await _orderCrudService.AddAsync(
-				_mapper.Map<Core.Models.Order>(model)
+				_mapper.Map<Core.Abstractions.Models.Order>(model)
 			);
 
 			return Ok();
@@ -116,7 +115,7 @@ public class OrderController : Controller {
 	public async Task<IActionResult> Update(OrderModel model) {
 		try {
 			await _orderCrudService.UpdateAsync(
-				_mapper.Map<Core.Models.Order>(model)
+				_mapper.Map<Core.Abstractions.Models.Order>(model)
 			);
 
 			return Ok();
@@ -131,7 +130,7 @@ public class OrderController : Controller {
 	public async Task<IActionResult> Remove(OrderModel model) {
 		try {
 			await _orderCrudService.RemoveAsync(
-				_mapper.Map<Core.Models.Order>(model)
+				_mapper.Map<Core.Abstractions.Models.Order>(model)
 			);
 
 			return Ok();
@@ -146,7 +145,7 @@ public class OrderController : Controller {
 	public async Task<IActionResult> RemoveById(int id) {
 		try {
 			await _orderCrudService.RemoveAsync(
-				_mapper.Map<Core.Models.Order>(
+				_mapper.Map<Core.Abstractions.Models.Order>(
 					new OrderModel { Id = id }
 				)
 			);

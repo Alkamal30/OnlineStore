@@ -1,10 +1,8 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using OnlineStore.Core.Services.Crud;
-using OnlineStore.Infrastructure;
+using OnlineStore.Core.Abstractions.Services.Crud;
 using OnlineStore.WebAPI.Models;
-using System.Net;
 
 namespace OnlineStore.WebAPI.Filters;
 

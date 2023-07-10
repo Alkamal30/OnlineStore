@@ -1,11 +1,7 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using OnlineStore.Core.Services.Authorization;
+using OnlineStore.Core.Abstractions.Services.Authorization;
 using OnlineStore.WebAPI.Models;
-using System.IdentityModel.Tokens.Jwt;
-using System.Text;
 
 namespace OnlineStore.WebAPI.Controllers;
 
@@ -34,7 +30,7 @@ public class AuthorizationController : Controller {
 			return Json(
 				_mapper.Map<UserAuthorizationResponseModel>(
 					await _authorizationService.AuthorizeAsync(
-						_mapper.Map<Core.Models.UserAuthorizationModel>(viewModel)
+						_mapper.Map<Core.Abstractions.Models.UserAuthorizationModel>(viewModel)
 					)
 				)
 			);
@@ -52,7 +48,7 @@ public class AuthorizationController : Controller {
 				return;
 
 			await _authorizationService.RegisterAsync(
-				_mapper.Map<Core.Models.UserRegistrationModel>(viewModel)
+				_mapper.Map<Core.Abstractions.Models.UserRegistrationModel>(viewModel)
 			);
 		}
 		catch { }

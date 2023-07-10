@@ -1,22 +1,13 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using OnlineStore.Core.Services.Authorization;
-using OnlineStore.Core.Services.RedisCache;
-using OnlineStore.Core.Services.Crud;
-using OnlineStore.Infrastructure;
-using System.Text;
 using OnlineStore.Core;
 using OnlineStore.WebAPI.Filters;
 using Hangfire;
 using OnlineStore.WebAPI.MappingProfiles;
 using OnlineStore.Core.Services;
-using Hangfire.SqlServer;
-using static Org.BouncyCastle.Math.EC.ECCurve;
-using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
+
 
 namespace OnlineStore.WebAPI
 {
-	public class Program {
+    public class Program {
 		public static void Main(string[] args) {
 			var builder = WebApplication.CreateBuilder(args);
 
