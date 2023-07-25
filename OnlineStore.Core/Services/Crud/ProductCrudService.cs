@@ -9,14 +9,14 @@ namespace OnlineStore.Core.Services.Crud;
 
 public class ProductCrudService : IProductCrudService {
 
-    public ProductCrudService(OnlineStoreDbContext dbContext, IRedisService redisService, IMapper mapper) {
-        _dbContext = dbContext;
+    public ProductCrudService(IDbContextFactory<OnlineStoreDbContext> dbContextFactory, IRedisService redisService, IMapper mapper) {
+        _dbContextFactory = dbContextFactory;
 		_redisService = redisService;
 		_mapper = mapper;
     }
 
 
-    private readonly OnlineStoreDbContext _dbContext;
+    private readonly IDbContextFactory<OnlineStoreDbContext> _dbContextFactory;
 	private readonly IRedisService _redisService;
 	private readonly IMapper _mapper;
 
@@ -28,7 +28,9 @@ public class ProductCrudService : IProductCrudService {
 		if(cachedProductsList is not null)
 			return cachedProductsList;
 
-		var productsList = _mapper.Map<IEnumerable<Product>>(_dbContext.Products.ToList());
+		using var dbContext = _dbContextFactory.CreateDbContext();
+
+		var productsList = _mapper.Map<IEnumerable<Product>>(dbContext.Products.ToList());
 		if(productsList is null)
 			return null;
 
@@ -42,7 +44,9 @@ public class ProductCrudService : IProductCrudService {
 		if(cachedProduct is not null)
 			return cachedProduct;
 
-		var product = _mapper.Map<Product>(_dbContext.Products.FirstOrDefault(x => x.Id == id));
+		using var dbContext = _dbContextFactory.CreateDbContext();
+
+		var product = _mapper.Map<Product>(dbContext.Products.FirstOrDefault(x => x.Id == id));
 		if(product is null)
 			return null;
 
@@ -55,22 +59,26 @@ public class ProductCrudService : IProductCrudService {
 		if(model is null)
 			return;
 
-		_dbContext.Products.Add(
+		using var dbContext = _dbContextFactory.CreateDbContext();
+
+		dbContext.Products.Add(
 			_mapper.Map<Infrastructure.Models.Product>(model)	
 		);
-		_dbContext.SaveChanges();
+		dbContext.SaveChanges();
 
-		UpdateCache();
+		UpdateCache(dbContext);
 	}
 
 	public void Update(Product model) {
 		if(model is null)
 			return;
 
+		using var dbContext = _dbContextFactory.CreateDbContext();
+
 		var modelDTO = _mapper.Map<Infrastructure.Models.Product>(model);
-		_dbContext.Products.Update(modelDTO);
-		_dbContext.SaveChanges();
-		UpdateCache();
+		dbContext.Products.Update(modelDTO);
+		dbContext.SaveChanges();
+		UpdateCache(dbContext);
 
 		var key = _redisKey + modelDTO.Id.ToString();
 		if(_redisService.GetObject<Product>(key) is not null)
@@ -81,10 +89,12 @@ public class ProductCrudService : IProductCrudService {
 		if(model is null)
 			return;
 
+		using var dbContext = _dbContextFactory.CreateDbContext();
+
 		var modelDTO = _mapper.Map<Infrastructure.Models.Product>(model);
-		_dbContext.Products.Remove(modelDTO);
-		_dbContext.SaveChanges();
-		UpdateCache();
+		dbContext.Products.Remove(modelDTO);
+		dbContext.SaveChanges();
+		UpdateCache(dbContext);
 
 		_redisService.DistributedCache.Remove(_redisKey + modelDTO.Id.ToString());
 	}
@@ -96,7 +106,9 @@ public class ProductCrudService : IProductCrudService {
 		if(cachedProducts is not null)
 			return cachedProducts;
 
-		var productsList = _mapper.Map<IEnumerable<Product>>(await _dbContext.Products.ToListAsync());
+		using var dbContext = await _dbContextFactory.CreateDbContextAsync();
+
+		var productsList = _mapper.Map<IEnumerable<Product>>(await dbContext.Products.ToListAsync());
 		if(productsList is null)
 			return null;
 
@@ -110,7 +122,9 @@ public class ProductCrudService : IProductCrudService {
 		if(cachedProduct is not null)
 			return cachedProduct;
 
-		var product = _mapper.Map<Product>(await _dbContext.Products.FirstOrDefaultAsync(x => x.Id == id));
+		using var dbContext = await _dbContextFactory.CreateDbContextAsync();
+
+		var product = _mapper.Map<Product>(await dbContext.Products.FirstOrDefaultAsync(x => x.Id == id));
 		if(product is null)
 			return null;
 
@@ -123,21 +137,25 @@ public class ProductCrudService : IProductCrudService {
 		if(model is null)
 			return;
 
-		await _dbContext.Products.AddAsync(
+		using var dbContext = await _dbContextFactory.CreateDbContextAsync();
+
+		await dbContext.Products.AddAsync(
 			_mapper.Map<Infrastructure.Models.Product>(model)
 		);
-		await _dbContext.SaveChangesAsync();
-		await UpdateCacheAsync();
+		await dbContext.SaveChangesAsync();
+		await UpdateCacheAsync(dbContext);
 	}
 
 	public async Task UpdateAsync(Product model) {
 		if(model is null)
 			return;
 
+		using var dbContext = await _dbContextFactory.CreateDbContextAsync();
+
 		var modelDTO = _mapper.Map<Infrastructure.Models.Product>(model);
-		_dbContext.Products.Update(modelDTO);
-		await _dbContext.SaveChangesAsync();
-		await UpdateCacheAsync();
+		dbContext.Products.Update(modelDTO);
+		await dbContext.SaveChangesAsync();
+		await UpdateCacheAsync(dbContext);
 
 		var key = _redisKey + modelDTO.Id.ToString();
 		if(await _redisService.GetObjectAsync<Product>(key) is not null)
@@ -148,31 +166,33 @@ public class ProductCrudService : IProductCrudService {
 		if(model is null)
 			return;
 
+		using var dbContext = await _dbContextFactory.CreateDbContextAsync();
+
 		var modelDTO = _mapper.Map<Infrastructure.Models.Product>(model);
-		_dbContext.Products.Remove(modelDTO);
-		await _dbContext.SaveChangesAsync();
-		await UpdateCacheAsync();
+		dbContext.Products.Remove(modelDTO);
+		await dbContext.SaveChangesAsync();
+		await UpdateCacheAsync(dbContext);
 
 		await _redisService.DistributedCache.RemoveAsync(_redisKey + modelDTO.Id.ToString());
 	}
 
 
-	private void UpdateCache() {
+	private void UpdateCache(OnlineStoreDbContext dbContext) {
 		if(_redisService.GetObject<List<UserRequests>>(_redisKey) is null)
 			return;
 
-		var productsList = _dbContext.Products.ToList();
+		var productsList = dbContext.Products.ToList();
 		if(productsList is null)
 			return;
 
 		_redisService.SetObject(_redisKey, productsList);
 	}
 
-	private async Task UpdateCacheAsync() {
+	private async Task UpdateCacheAsync(OnlineStoreDbContext dbContext) {
 		if(await _redisService.GetObjectAsync<List<UserRequests>>(_redisKey) is null)
 			return;
 
-		var productsList = await _dbContext.Products.ToListAsync();
+		var productsList = await dbContext.Products.ToListAsync();
 		if(productsList is null)
 			return;
 

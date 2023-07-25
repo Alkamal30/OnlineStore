@@ -8,23 +8,35 @@ namespace OnlineStore.Core.Services.Crud;
 
 public class UserCrudService : IUserCrudService {
 
-    public UserCrudService(OnlineStoreDbContext dbContext, IMapper mapper) {
-        _dbContext = dbContext;
+    public UserCrudService(IDbContextFactory<OnlineStoreDbContext> dbContextFactory, IMapper mapper) {
+        _dbContextFactory = dbContextFactory;
 		_mapper = mapper;
     }
 
 
-    private OnlineStoreDbContext _dbContext;
+    private IDbContextFactory<OnlineStoreDbContext> _dbContextFactory;
 	private IMapper _mapper;
 
 
 
     public IEnumerable<User> GetAll() {
-		return _mapper.Map<List<User>>(_dbContext.Users.ToList());
+		using var dbContext = _dbContextFactory.CreateDbContext();
+
+		var users = _mapper.Map<List<User>>(
+			dbContext.Users.ToList()
+		);
+
+		return users;
 	}
 
     public User? GetById(int id) {
-		return _mapper.Map<User>(_dbContext.Users.FirstOrDefault(x => x.Id == id));
+		using var dbContext = _dbContextFactory.CreateDbContext();
+
+		var user = _mapper.Map<User>(
+			dbContext.Users.FirstOrDefault(x => x.Id == id)
+		);
+
+		return user;
 	}
 
 
@@ -32,46 +44,68 @@ public class UserCrudService : IUserCrudService {
         if (model is null)
             return;
 
-        _dbContext.Users.Add(
+		using var dbContext = _dbContextFactory.CreateDbContext();
+
+		dbContext.Users.Add(
 			_mapper.Map<Infrastructure.Models.User>(model)
 		);
-        _dbContext.SaveChanges();
+        dbContext.SaveChanges();
     }
 
     public void Remove(User model) {
 		if(model is null)
 			return;
 
-		_dbContext.Users.Remove(
+		using var dbContext = _dbContextFactory.CreateDbContext();
+
+		dbContext.Users.Remove(
 			_mapper.Map<Infrastructure.Models.User>(model)
 		);
-		_dbContext.SaveChanges();
+		dbContext.SaveChanges();
 	}
 
     public void Update(User model) {
 		if(model is null)
 			return;
 
-		_dbContext.Users.Update(
+		using var dbContext = _dbContextFactory.CreateDbContext();
+
+		dbContext.Users.Update(
 			_mapper.Map<Infrastructure.Models.User>(model)
 		);
-		_dbContext.SaveChanges();
+		dbContext.SaveChanges();
 	}
 
 
 
 	public async Task<IEnumerable<User>> GetAllAsync() {
-		return _mapper.Map<List<User>>(await _dbContext.Users.ToListAsync());
+		using var dbContext = await _dbContextFactory.CreateDbContextAsync();
+
+		var users = _mapper.Map<List<User>>(
+			await dbContext.Users.ToListAsync()
+		);
+
+		return users;
 	}
 
 	public async Task<User?> GetByIdAsync(int id) {
-		return _mapper.Map<User>(await _dbContext.Users.FirstOrDefaultAsync(x => x.Id == id));
+		using var dbContext = await _dbContextFactory.CreateDbContextAsync();
+
+		var user = _mapper.Map<User>(
+			await dbContext.Users.FirstOrDefaultAsync(x => x.Id == id)
+		);
+
+		return user;
 	}
 
 	public async Task<User?> GetByLoginAsync(string login) {
-		return _mapper.Map<User>(
-			await _dbContext.Users.FirstOrDefaultAsync(x => x.Login == login)
+		using var dbContext = await _dbContextFactory.CreateDbContextAsync();
+
+		var user = _mapper.Map<User>(
+			await dbContext.Users.FirstOrDefaultAsync(x => x.Login == login)
 		);
+
+		return user;
 	}
 
 
@@ -79,29 +113,35 @@ public class UserCrudService : IUserCrudService {
 		if(model is null)
 			return;
 
-		await _dbContext.Users.AddAsync(
+		using var dbContext = await _dbContextFactory.CreateDbContextAsync();
+
+		await dbContext.Users.AddAsync(
 			_mapper.Map<Infrastructure.Models.User>(model)	
 		);
-		await _dbContext.SaveChangesAsync();
+		await dbContext.SaveChangesAsync();
 	}
 
     public async Task RemoveAsync(User model) {
 		if(model is null)
 			return;
 
-		_dbContext.Users.Remove(
+		using var dbContext = await _dbContextFactory.CreateDbContextAsync();
+
+		dbContext.Users.Remove(
 			_mapper.Map<Infrastructure.Models.User>(model)
 		);
-		await _dbContext.SaveChangesAsync();
+		await dbContext.SaveChangesAsync();
 	}
 
     public async Task UpdateAsync(User model) {
 		if(model is null)
 			return;
 
-		_dbContext.Users.Update(
+		using var dbContext = await _dbContextFactory.CreateDbContextAsync();
+
+		dbContext.Users.Update(
 			_mapper.Map<Infrastructure.Models.User>(model)
 		);
-		await _dbContext.SaveChangesAsync();
+		await dbContext.SaveChangesAsync();
 	}
 }

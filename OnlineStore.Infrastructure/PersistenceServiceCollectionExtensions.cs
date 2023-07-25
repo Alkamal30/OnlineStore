@@ -8,7 +8,7 @@ public static class PersistenceServiceCollectionExtensions {
 
 	public static IServiceCollection AddPersistence(this IServiceCollection services, IConfiguration configuration) {
 
-		services.AddDbContext<OnlineStoreDbContext>(
+		services.AddDbContextFactory<OnlineStoreDbContext>(
 			options => options.UseNpgsql(
 				configuration.GetConnectionString("Default")	
 			)

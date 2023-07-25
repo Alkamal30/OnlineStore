@@ -10,14 +10,14 @@ namespace OnlineStore.Core.Services.Crud;
 
 public class UserRequestsCrudService : IUserRequestsCrudService {
 
-	public UserRequestsCrudService(OnlineStoreDbContext dbContext, IMapper mapper, IRedisService redisService) {
-		_dbContext = dbContext;
+	public UserRequestsCrudService(IDbContextFactory<OnlineStoreDbContext> dbContextFactory, IMapper mapper, IRedisService redisService) {
+		_dbContextFactory = dbContextFactory;
 		_mapper = mapper;
 		_redisService = redisService;
 	}
 
 
-	private readonly OnlineStoreDbContext _dbContext;
+	private readonly IDbContextFactory<OnlineStoreDbContext> _dbContextFactory;
 	private readonly IMapper _mapper;
 	private readonly IRedisService _redisService;
 
@@ -30,8 +30,10 @@ public class UserRequestsCrudService : IUserRequestsCrudService {
 		if(cachedUserRequestsList is not null)
 			return cachedUserRequestsList;
 
+		using var dbContext = _dbContextFactory.CreateDbContext();
+
 		var userRequestsList = _mapper.Map<IEnumerable<UserRequests>>(
-			_dbContext.UserRequests.ToList()
+			dbContext.UserRequests.ToList()
 		);
 		if(userRequestsList is null)
 			return null;
@@ -46,8 +48,10 @@ public class UserRequestsCrudService : IUserRequestsCrudService {
 		if(cachedUserRequests is not null)
 			return cachedUserRequests;
 
+		using var dbContext = _dbContextFactory.CreateDbContext();
+
 		var userRequests = _mapper.Map<UserRequests>(
-			_dbContext.UserRequests.FirstOrDefault(x => x.Id == id)
+			dbContext.UserRequests.FirstOrDefault(x => x.Id == id)
 		);
 		if(userRequests is null)
 			return null;
@@ -62,8 +66,10 @@ public class UserRequestsCrudService : IUserRequestsCrudService {
 		if(cachedUserRequests is not null)
 			return cachedUserRequests;
 
+		using var dbContext = _dbContextFactory.CreateDbContext();
+
 		var userRequests = _mapper.Map<UserRequests>(
-			_dbContext.UserRequests.FirstOrDefault(x => x.Login == login)
+			dbContext.UserRequests.FirstOrDefault(x => x.Login == login)
 		);
 		if(userRequests is null)
 			return null;
@@ -77,39 +83,45 @@ public class UserRequestsCrudService : IUserRequestsCrudService {
 		if(model is null)
 			return;
 
-		_dbContext.UserRequests.Add(
+		using var dbContext = _dbContextFactory.CreateDbContext();
+
+		dbContext.UserRequests.Add(
 			_mapper.Map<Infrastructure.Models.UserRequests>(model)	
 		);
-		_dbContext.SaveChanges();
+		dbContext.SaveChanges();
 
-		UpdateCache();
+		UpdateCache(dbContext);
 	}
 
 	public void Update(UserRequests model) {
 		if(model is null)
 			return;
 
-		_dbContext.UserRequests.Update(
+		using var dbContext = _dbContextFactory.CreateDbContext();
+
+		dbContext.UserRequests.Update(
 			_mapper.Map<Infrastructure.Models.UserRequests>(model)
 		);
-		_dbContext.SaveChanges();
+		dbContext.SaveChanges();
 
 		var key = _redisKey + model.Id.ToString();
 		if(_redisService.GetObject<UserRequests>(key) is not null)
 			_redisService.SetObject(key, model);
 
-		UpdateCache();
+		UpdateCache(dbContext);
 	}
 
 	public void Remove(UserRequests model) {
 		if(model is null)
 			return;
 
-		_dbContext.UserRequests.Remove(
+		using var dbContext = _dbContextFactory.CreateDbContext();
+
+		dbContext.UserRequests.Remove(
 			_mapper.Map<Infrastructure.Models.UserRequests>(model)
 		);
-		_dbContext.SaveChanges();
-		UpdateCache();
+		dbContext.SaveChanges();
+		UpdateCache(dbContext);
 
 		_redisService.DistributedCache.Remove(_redisKey + model.Id.ToString());
 	}
@@ -121,8 +133,10 @@ public class UserRequestsCrudService : IUserRequestsCrudService {
 		if(cachedUserRequestsList is not null)
 			return cachedUserRequestsList;
 
+		using var dbContext = await _dbContextFactory.CreateDbContextAsync();
+
 		var userRequestsList = _mapper.Map<IEnumerable<UserRequests>>(
-			await _dbContext.UserRequests.ToListAsync()
+			await dbContext.UserRequests.ToListAsync()
 		);
 		if(userRequestsList is null)
 			return null;
@@ -137,8 +151,10 @@ public class UserRequestsCrudService : IUserRequestsCrudService {
 		if(cachedUserRequests is not null)
 			return cachedUserRequests;
 
+		using var dbContext = await _dbContextFactory.CreateDbContextAsync();
+
 		var userRequests = _mapper.Map<UserRequests>(
-			await _dbContext.UserRequests.FirstOrDefaultAsync(x => x.Id == id)
+			await dbContext.UserRequests.FirstOrDefaultAsync(x => x.Id == id)
 		);
 		if(userRequests is null)
 			return null;
@@ -153,8 +169,10 @@ public class UserRequestsCrudService : IUserRequestsCrudService {
 		if(cachedUserRequests is not null)
 			return cachedUserRequests;
 
+		using var dbContext = await _dbContextFactory.CreateDbContextAsync();
+
 		var userRequests = _mapper.Map<UserRequests>(
-			await _dbContext.UserRequests.FirstOrDefaultAsync(x => x.Login == login)
+			await dbContext.UserRequests.FirstOrDefaultAsync(x => x.Login == login)
 		);
 		if(userRequests is null)
 			return null;
@@ -168,23 +186,27 @@ public class UserRequestsCrudService : IUserRequestsCrudService {
 		if(model is null)
 			return;
 
-		await _dbContext.UserRequests.AddAsync(
+		using var dbContext = await _dbContextFactory.CreateDbContextAsync();
+
+		await dbContext.UserRequests.AddAsync(
 			_mapper.Map<Infrastructure.Models.UserRequests>(model)
 		);
 
-		await _dbContext.SaveChangesAsync();
-		await UpdateCacheAsync();
+		await dbContext.SaveChangesAsync();
+		await UpdateCacheAsync(dbContext);
 	}
 
 	public async Task UpdateAsync(UserRequests model) {
 		if(model is null)
 			return;
 
-		_dbContext.UserRequests.Update(
+		using var dbContext = await _dbContextFactory.CreateDbContextAsync();
+
+		dbContext.UserRequests.Update(
 			_mapper.Map<Infrastructure.Models.UserRequests>(model)
 		);
-		await _dbContext.SaveChangesAsync();
-		await UpdateCacheAsync();
+		await dbContext.SaveChangesAsync();
+		await UpdateCacheAsync(dbContext);
 
 		var key = _redisKey + model.Id.ToString();
 		if(await _redisService.GetObjectAsync<UserRequests>(key) is not null)
@@ -195,34 +217,36 @@ public class UserRequestsCrudService : IUserRequestsCrudService {
 		if(model is null)
 			return;
 
-		_dbContext.UserRequests.Remove(
+		using var dbContext = await _dbContextFactory.CreateDbContextAsync();
+
+		dbContext.UserRequests.Remove(
 			_mapper.Map<Infrastructure.Models.UserRequests>(model)
 		);
 
-		await _dbContext.SaveChangesAsync();
-		await UpdateCacheAsync();
+		await dbContext.SaveChangesAsync();
+		await UpdateCacheAsync(dbContext);
 
 		await _redisService.DistributedCache.RemoveAsync(_redisKey + model.Id.ToString());
 	}
 
 
 
-	private void UpdateCache() {
+	private void UpdateCache(OnlineStoreDbContext dbContext) {
 		if(_redisService.GetObject<List<UserRequests>>(_redisKey) is null)
 			return;
 
-		var userRequestsList = _dbContext.UserRequests.ToList();
+		var userRequestsList = dbContext.UserRequests.ToList();
 		if(userRequestsList is null)
 			return;
 
 		_redisService.SetObject(_redisKey, userRequestsList);
 	}
 
-	private async Task UpdateCacheAsync() {
+	private async Task UpdateCacheAsync(OnlineStoreDbContext dbContext) {
 		if(_redisService.GetObjectAsync<List<UserRequests>>(_redisKey) is null)
 			return;
 
-		var userRequestsList = await _dbContext.UserRequests.ToListAsync();
+		var userRequestsList = await dbContext.UserRequests.ToListAsync();
 		if(userRequestsList is null)
 			return;
 

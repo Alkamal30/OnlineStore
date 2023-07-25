@@ -8,14 +8,14 @@ namespace OnlineStore.Core.Services.Authorization;
 
 public class AuthorizationService : IAuthorizationService {
 
-    public AuthorizationService(OnlineStoreDbContext dbContext, ITokenGenerator tokenGenerator, IMapper mapper) {
-        _dbContext = dbContext;
+    public AuthorizationService(IDbContextFactory<OnlineStoreDbContext> dbContextFactory, ITokenGenerator tokenGenerator, IMapper mapper) {
+        _dbContextFactory = dbContextFactory;
         _tokenGenerator = tokenGenerator;
         _mapper = mapper;
     }
 
 
-    private OnlineStoreDbContext _dbContext;
+    private IDbContextFactory<OnlineStoreDbContext> _dbContextFactory;
     private ITokenGenerator _tokenGenerator;
     private IMapper _mapper;
 
@@ -35,10 +35,12 @@ public class AuthorizationService : IAuthorizationService {
 	}
 
     private async Task<User?> TryAuthorizeUserAsync(UserAuthorizationModel viewModel) {
+        using var dbContext = await _dbContextFactory.CreateDbContextAsync();
+
         if (viewModel is null)
             return null;
 
-        var foundUser = _mapper.Map<User>(await _dbContext.Users.FirstOrDefaultAsync(x => x.Login == viewModel.Login));
+        var foundUser = _mapper.Map<User>(await dbContext.Users.FirstOrDefaultAsync(x => x.Login == viewModel.Login));
         if (foundUser is null)
             return null;
 
@@ -52,10 +54,12 @@ public class AuthorizationService : IAuthorizationService {
 
     public async Task<string> RegisterAsync(UserRegistrationModel viewModel) {
         try {
+            using var dbContext = await _dbContextFactory.CreateDbContextAsync();
+
             if (viewModel is null)
                 return "";
 
-            var foundUser = await _dbContext.Users.FirstOrDefaultAsync(x => x.Login == viewModel.Login);
+            var foundUser = await dbContext.Users.FirstOrDefaultAsync(x => x.Login == viewModel.Login);
             if (foundUser is not null)
                 return "";
 
@@ -65,10 +69,11 @@ public class AuthorizationService : IAuthorizationService {
                 Password = viewModel.Password
             };
 
-            await _dbContext.Users.AddAsync(
+            await dbContext.Users.AddAsync(
                 _mapper.Map<Infrastructure.Models.User>(user)    
             );
-            await _dbContext.SaveChangesAsync();
+            await dbContext.SaveChangesAsync();
+
             return "";
         }
         catch {
